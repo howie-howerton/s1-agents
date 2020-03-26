@@ -1,10 +1,12 @@
-# s1-agents
-A basic "helper script" to automate the download, install, association to a site and activation of SentinelOne Agents on Linux.
+# s1-agent-helper.sh
+A basic "helper script" to automate the download, installation, association to a site and activation of SentinelOne Agents on Linux.
 
 ## Detailed Description
 This script can be downloaded and executed manually or via script.  
 
 Note: The concept of this script could easily be modified for usage within configuration management tools (Ansible, Chef, Puppet, etc.)
+
+For more info, please refer to:  https://support.sentinelone.com/hc/en-us/articles/360033867174-Installing-on-Linux-3-x-Agents
 
 # Pre-Requisites
 You must have 'curl' installed on your target Linux host
