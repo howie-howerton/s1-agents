@@ -58,13 +58,13 @@ fi
 
 # Detect if the Linux Platform uses RPM or DEB packages
 if (type lsb_release &>/dev/null); then
-    sudo curl -L "$AGENT_GITHUB_REPO$PKG_BASE_NAME.deb$GITHUB_RAW_POSTFIX" -o $PKG_BASE_NAME.deb
-    sudo dpkg -i $PKG_BASE_NAME.deb
+    sudo curl -L "$AGENT_GITHUB_REPO$PKG_BASE_NAME.deb$GITHUB_RAW_POSTFIX" -o /tmp/$PKG_BASE_NAME.deb
+    sudo dpkg -i /tmp/$PKG_BASE_NAME.deb
     sudo /opt/sentinelone/bin/sentinelctl management token set $SITE_TOKEN
     sudo /opt/sentinelone/bin/sentinelctl control start
 else
-    sudo curl -L "$AGENT_GITHUB_REPO$PKG_BASE_NAME.rpm$GITHUB_RAW_POSTFIX" -o $PKG_BASE_NAME.rpm
-    sudo rpm -i --nodigest $PKG_BASE_NAME.rpm
+    sudo curl -L "$AGENT_GITHUB_REPO$PKG_BASE_NAME.rpm$GITHUB_RAW_POSTFIX" -o /tmp/$PKG_BASE_NAME.rpm
+    sudo rpm -i --nodigest /tmp/$PKG_BASE_NAME.rpm
     sudo /opt/sentinelone/bin/sentinelctl management token set $SITE_TOKEN
     sudo /opt/sentinelone/bin/sentinelctl control start
 fi

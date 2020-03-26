@@ -1,0 +1,28 @@
+export PROJECT_ID="s1-demo"
+export IMAGE_FAMILY="ubuntu-1804-lts"
+export IMAGE_PROJECT="ubuntu-os-cloud"
+export ZONE="us-east1-b"
+export INSTANCE_NAME="s1-vm-01"
+export INSTANCE_TYPE="n1-standard-1"
+export AGENT_VERSION="4.0.2.6"            # CHANGE THIS TO THE DESIRED VERSION OF THE AGENT 
+export SITE_TOKEN=""                      # PROVIDE YOUR S1 SITE TOKEN HERE 
+
+# Be sure that our project ID is set as the default
+gcloud config set project $PROJECT_ID
+
+gcloud compute instances create $INSTANCE_NAME \
+        --project=$PROJECT_ID \
+        --zone=$ZONE \
+        --image-family=$IMAGE_FAMILY \
+        --image-project=$IMAGE_PROJECT \
+        --maintenance-policy=TERMINATE \
+        --machine-type=$INSTANCE_TYPE \
+        --metadata startup-script='#!/bin/bash
+sudo curl -L "https://raw.githubusercontent.com/howie-howerton/s1-agents/master/s1-agent-helper.sh" -o s1-agent-helper.sh
+sudo chmod +x s1-agent-helper.sh
+sudo ./s1-agent-helper.sh AGENT_VERSION SITE_TOKEN'
+
+
+# SSH to your VM with:  gcloud compute ssh $INSTANCE_NAME
+
+# Delete the VM when you're finished:   gcloud compute instances delete $INSTANCE_NAME
