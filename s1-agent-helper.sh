@@ -4,7 +4,7 @@
 # 
 # Usage:        sudo ./s1-agent-helper.sh AGENT_VERSION SITE_TOKEN
 # 
-# Version:      1.0
+# Version:      1.1
 ################################################################################
 # Note: Currently using GitHub to serve up Agent packages.
 AGENT_GITHUB_REPO='https://github.com/howie-howerton/s1-agents/blob/master/'  
@@ -34,9 +34,9 @@ done
 # Get the proper package name from the AGENT_VERSION argument
 VERSION=$(echo $AGENT_VERSION | tr '.' '_')
 # Next, check if the requested version is valid or not (NOTE: THIS LIST WILL NEED TO BE UPDATED AS NEW AGENTS ARE RLEASED!)
-if ! [[ "$VERSION" =~ ^(4_0_2_6|3_5_2_6|3_4_5_3|3_3_1_14) ]]; then
+if ! [[ "$VERSION" =~ ^(4_0_3_11|4_0_2_6|3_5_2_6|3_4_5_3|3_3_1_14) ]]; then
     echo "Invalid version specified: $VERSION"
-    echo "Valid versions are:  4.0.2.6, 3.5.2.6, 3.4.5.3 and 3.3.1.14"
+    echo "Valid versions are:  4.0.3.11, 4.0.2.6, 3.5.2.6, 3.4.5.3 and 3.3.1.14"
     exit 1
 else
     PKG_BASE_NAME=SentinelAgent_linux_v$VERSION
