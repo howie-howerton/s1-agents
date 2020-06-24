@@ -17,9 +17,9 @@ You must have 'curl' installed on your target Linux host
 ```
 sudo chmod +x s1-agent-helper.sh
 ```
-3. Execute the script with root privileges (passing arguments for AGENT_VERSION and SITE_TOKEN).  For example:
+3. Execute the script with root privileges (passing arguments for S1_CONSOLE_PREFIX, API_KEY, SITE_TOKEN and VERSION_STATUS).  For example:
 ```
-sudo ./s1-agent-helper.sh 4.0.2.6 eyJ1cmwiOiAiaHABcHM6Ly91c2VhMS1wdXJwbGUuc2VudGluZWxvbmUub1V0Iiwg5nNpdGV882V5IjogIjZiODA5ZGI0YjQ3YzhkY2YifQ==
+sudo ./s1-agent-helper.sh usea1-purple eEBKU8tXIEaDy4vezc9MHeru6ElrA3pJaNIY2eg7adzMfQYGYX3YRJ3x7h0fFF7eFxY9hKtQzHZR3FDi eyJ1cmwiOiAiaHABcHM6Ly91c2VhMS1wdXJwbGUuc2VudGluZWxvbmUub1V0Iiwg5nNpdGV882V5IjogIjZiODA5ZGI0YjQ3YzhkY2YifQ== GA
 ```
 
 # Usage within AWS EC2 User Data
@@ -29,7 +29,7 @@ Be sure to replace the AGENT_VERSION and SITE_TOKEN values with appropriate valu
 #!/bin/bash
 sudo curl -L "https://raw.githubusercontent.com/howie-howerton/s1-agents/master/s1-agent-helper.sh" -o s1-agent-helper.sh
 sudo chmod +x s1-agent-helper.sh
-sudo ./s1-agent-helper.sh AGENT_VERSION SITE_TOKEN
+sudo ./s1-agent-helper.sh S1_CONSOLE_PREFIX API_KEY SITE_TOKEN VERSION_STATUS
 ```
 
 # Usage within GCP Compute Engine
@@ -39,12 +39,12 @@ Be sure to replace the AGENT_VERSION and SITE_TOKEN values with appropriate valu
 #!/bin/bash
 sudo curl -L "https://raw.githubusercontent.com/howie-howerton/s1-agents/master/s1-agent-helper.sh" -o s1-agent-helper.sh
 sudo chmod +x s1-agent-helper.sh
-sudo ./s1-agent-helper.sh AGENT_VERSION SITE_TOKEN
+sudo ./s1-agent-helper.sh S1_CONSOLE_PREFIX API_KEY SITE_TOKEN VERSION_STATUS
 ```
 
 # Usage within Azure Virtual Machines
 When manually creating a new Virtual Machine, in the 'Advanced' section of the 'Create a virtual machine' wizard, Copy/Paste the following cloud-init script.
-Be sure to replace the AGENT_VERSION and SITE_TOKEN values with appropriate values:
+Be sure to replace the S1_CONSOLE_PREFIX, API_KEY, SITE_TOKEN and VERSION_STATUS values with appropriate values:
 ```
 #cloud-config
 write_files:
@@ -54,7 +54,7 @@ write_files:
       #!/bin/bash
       curl https://raw.githubusercontent.com/howie-howerton/s1-agents/master/s1-agent-helper.sh -o /tmp/s1-agent-helper.sh
       chmod 755 /tmp/s1-agent-helper.sh
-      /tmp/s1-agent-helper.sh AGENT_VERSION SITE_TOKEN
+      /tmp/s1-agent-helper.sh S1_CONSOLE_PREFIX API_KEY SITE_TOKEN VERSION_STATUS
 runcmd:
   - /tmp/s1-agent-helper-install.sh
 ```
