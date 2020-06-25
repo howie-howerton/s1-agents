@@ -2,17 +2,15 @@
 ################################################################################
 # Description:  Bash script to aid with automating S1 Agent install on Linux
 # 
-# Usage:        sudo ./s1-agent-helper.sh S1_CONSOLE_PREFIX API_KEY SITE_TOKEN VERSION_STATUS
+# Usage:    sudo ./s1-agent-helper.sh S1_CONSOLE_PREFIX API_KEY SITE_TOKEN VERSION_STATUS
 # 
-# Version:      1.3
+# Version:  1.3
 ################################################################################
 
-# NOTE:  This version will install the latest EA or GA version of the agent
+# NOTE:  This version will install the latest EA or GA version of the S1 agent
 # NOTE:  This script will install the jq utility if it's not already installed.
 
-# TODO:  Make an option to specify EA or GA
-# TODO:  Test function for API_TOKEN and SITE_TOKEN??? -> Generate a SPECIFIC error.
-# TODO:  Maybe add logic uninstall jq if it wasn't installed prior to the script running.
+#TODO: Add option to uninstall jq if it wasn't already installed
 
 
 S1_MGMT_URL="https://$1.sentinelone.net"    #ie:  usea1-purple
