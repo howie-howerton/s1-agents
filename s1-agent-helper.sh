@@ -4,13 +4,11 @@
 # 
 # Usage:    sudo ./s1-agent-helper.sh S1_CONSOLE_PREFIX API_KEY SITE_TOKEN VERSION_STATUS
 # 
-# Version:  1.3
+# Version:  1.4
 ################################################################################
 
 # NOTE:  This version will install the latest EA or GA version of the S1 agent
-# NOTE:  This script will install the jq utility if it's not already installed.
-
-#TODO: Add option to uninstall jq if it wasn't already installed
+# NOTE:  This script will install the curl and jq utilities if not already installed.
 
 
 S1_MGMT_URL="https://$1.sentinelone.net"    #ie:  usea1-purple
@@ -36,8 +34,19 @@ fi
 
 # Check if curl is installed.
 if ! [[ -x "$(which curl)" ]]; then
-  echo "curl is not installed.  Please install curl and retry."
-  exit 1
+  echo ""
+    echo "################################################################################"
+    echo "# INSTALLING CURL UTILITY IN ORDER TO INTERACT WITH S1 API"
+    echo "################################################################################"
+    echo ""
+    if [[ $1 = '.deb' ]]; then
+        sudo apt-get update && sudo apt-get install -y curl
+    elif [[ $1 = '.rpm' ]]; then
+        sudo yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+        sudo yum install -y jq
+    else
+        echo "unsupported file extension!" # Note.. might need to handle dnf in the future
+    fi
 fi
 
 # Check if the SITE_TOKEN is in the right format
@@ -70,9 +79,11 @@ function jq_check () {
         echo "################################################################################"
         echo ""
         if [[ $1 = '.deb' ]]; then
-            sudo apt-get update && sudo apt-get install -y jq
+            sudo yum update -y
         elif [[ $1 = '.rpm' ]]; then
-            sudo yum install -y jq      # NEED TO INSTALL EPEL FIRST???
+            sudo yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+            sudo apt-get update && sudo apt-get install -y jq
+            sudo yum install -y jq
         else
             echo "unsupported file extension!" # Note.. might need to handle dnf in the future
         fi 
