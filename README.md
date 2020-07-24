@@ -24,7 +24,7 @@ sudo ./s1-agent-helper.sh usea1-purple eEBKU8tXIEaDy4vezc9MHeru6ElrA3pJaNIY2eg7a
 
 # Usage within AWS EC2 User Data
 When manually launching a new EC2 Instance.. During 'Step 3: Configure Instance Details', Copy/Paste the following into the 'User data' text area.
-Be sure to replace the AGENT_VERSION and SITE_TOKEN values with appropriate values:
+Be sure to replace the S1_CONSOLE_PREFIX (ie: usea1-011), API_KEY, SITE_TOKEN and VERSION_STATUS (ie: GA or EA) values with appropriate values:
 ```
 #!/bin/bash
 sudo curl -L "https://raw.githubusercontent.com/howie-howerton/s1-agents/master/s1-agent-helper.sh" -o s1-agent-helper.sh
@@ -34,7 +34,7 @@ sudo ./s1-agent-helper.sh S1_CONSOLE_PREFIX API_KEY SITE_TOKEN VERSION_STATUS
 
 # Usage within GCP Compute Engine
 When manually creating a new Compute Engine instance, expand "Management, security, disks, networking, sole tenance" and Copy/Paste the following into the 'Startup script' textarea.
-Be sure to replace the AGENT_VERSION and SITE_TOKEN values with appropriate values:
+Be sure to replace the S1_CONSOLE_PREFIX (ie: usea1-011), API_KEY, SITE_TOKEN and VERSION_STATUS (ie: GA or EA) values with appropriate values:
 ```
 #!/bin/bash
 sudo curl -L "https://raw.githubusercontent.com/howie-howerton/s1-agents/master/s1-agent-helper.sh" -o s1-agent-helper.sh
@@ -44,7 +44,7 @@ sudo ./s1-agent-helper.sh S1_CONSOLE_PREFIX API_KEY SITE_TOKEN VERSION_STATUS
 
 # Usage within Azure Virtual Machines
 When manually creating a new Virtual Machine, in the 'Advanced' section of the 'Create a virtual machine' wizard, Copy/Paste the following cloud-init script.
-Be sure to replace the S1_CONSOLE_PREFIX, API_KEY, SITE_TOKEN and VERSION_STATUS values with appropriate values:
+Be sure to replace the S1_CONSOLE_PREFIX (ie: usea1-011), API_KEY, SITE_TOKEN and VERSION_STATUS (ie: GA or EA) values with appropriate values:
 ```
 #cloud-config
 write_files:
