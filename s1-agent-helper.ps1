@@ -10,8 +10,6 @@ param(
     [string]$version_status
     )
 
-# TODO: Sanity check arguments
-
 write-output "Console:          $s1_console_prefix"
 write-output "API Key:          $api_key"
 write-output "Site Token:       $site_token"
@@ -29,8 +27,8 @@ if (-Not ($api_key.Length -eq 80)) {
     exit 1
 }
 
-if (-Not ($site_token.Length -eq 108)) {
-    Write-Output "Site Tokens are generally 108 characters long and are ASCII encoded."
+if (-Not ($site_token.Length -gt 100)) {
+    Write-Output "Site Tokens are generally 100 characters or longer and are ASCII encoded."
     exit 1
 }
 
@@ -47,7 +45,7 @@ Write-Output $uri
 
 # Configure HTTP header for API Calls
 $apiHeaders = @{"Authorization"="APIToken $api_key"}
-
+# The body contains parameters to search for packages with .exe file extensions.. ordering by latest version.
 $body = @{
     "limit"=10
     "packageTypes"="Agent"
@@ -57,12 +55,12 @@ $body = @{
     "fileExtension"=".exe"
     "sortOrder"="desc"
     }
-
+# Query the S1 API
 $response = Invoke-RestMethod -Uri $uri -Headers $apiHeaders -Method Get -ContentType "application/json" -Body $body
-
+# Store the response data as a list of objects
 $packages = $response.data
 
-#Note: $version_status* will match either GA or GA-SP1, GA-SP2, etc
+#Note: "$version_status*"" will match either GA or GA-SP1, GA-SP2, etc
 foreach ($package in $packages) {
     if ($package.status -like "$version_status*") {
         $agent_download_link = $package.link
@@ -74,9 +72,10 @@ foreach ($package in $packages) {
 Write-Output "Agent File Name:     $agent_file_name"
 Write-Output "Agent Download Link: $agent_download_link"
 
+# Now that we have the download link and file name.  Download the package.
 $wc = New-Object System.Net.WebClient
 $wc.Headers['Authorization'] = "APIToken $api_key"
 $wc.DownloadFile($agent_download_link, "$env:TEMP\$agent_file_name")
-
+# Execute the package with the quiet option
 & "$env:TEMP\$agent_file_name" /SITE_TOKEN=$site_token /quiet #/reboot
-echo %ErrorLevel%
+
