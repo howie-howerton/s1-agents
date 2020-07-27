@@ -41,9 +41,9 @@ if ! [[ -x "$(which curl)" ]]; then
 fi
 
 # Check if the SITE_TOKEN is in the right format
-if ! [[ ${#SITE_TOKEN} -eq 108 ]]; then
+if ! [[ ${#SITE_TOKEN} -gt 100 ]]; then
     echo "Invalid format for SITE_TOKEN: $SITE_TOKEN"
-    echo "Site Tokens are generally 108 characters long and are ASCII encoded."
+    echo "Site Tokens are generally more than 100 characters long and are ASCII encoded."
     exit 1
 fi
 
