@@ -77,5 +77,5 @@ $wc = New-Object System.Net.WebClient
 $wc.Headers['Authorization'] = "APIToken $api_key"
 $wc.DownloadFile($agent_download_link, "$env:TEMP\$agent_file_name")
 # Execute the package with the quiet option
-& "$env:TEMP\$agent_file_name" /SITE_TOKEN=$site_token /quiet #/reboot
+& "$env:TEMP\$agent_file_name" /SITE_TOKEN=$site_token /quiet /reboot
 
