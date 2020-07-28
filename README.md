@@ -25,12 +25,20 @@ sudo ./s1-agent-helper.sh usea1-purple eEBKU8tXIEaDy4vezc9MHeru6ElrA3pJaNIY2eg7a
 # Usage within AWS EC2 User Data
 When manually launching a new EC2 Instance.. During 'Step 3: Configure Instance Details', Copy/Paste the following into the 'User data' text area.
 Be sure to replace the S1_CONSOLE_PREFIX (ie: usea1-011), API_KEY, SITE_TOKEN and VERSION_STATUS (ie: GA or EA) values with appropriate values:
+## Linux-based instances
 ```
 #!/bin/bash
 sudo curl -L "https://raw.githubusercontent.com/howie-howerton/s1-agents/master/s1-agent-helper.sh" -o s1-agent-helper.sh
 sudo chmod +x s1-agent-helper.sh
 sudo ./s1-agent-helper.sh S1_CONSOLE_PREFIX API_KEY SITE_TOKEN VERSION_STATUS
 ```
+## Windows-based instances
+<powershell>
+Set-ExecutionPolicy Unrestricted
+(new-object Net.WebClient).DownloadFile("https://raw.githubusercontent.com/howie-howerton/s1-agents/master/s1-agent-helper.ps1", "$env:TEMP\s1-agent-helper.ps1") 
+& "$env:TEMP\s1-agent-helper.ps1" usea1-purple eEBKUOtXIEaDyVvezc9MHeru6ElrAmpJaNIC8eg7adzMfQYGYX3YRJ3x7h0fFF7eFxY9hKtQxHZR3FDi eyJ1cmwiOiAiaHR0cHM6Ly91c2VhMS1wdXJwbGUuc2VudGluZWxvbmUubmV0IiwgInNpdGVfa2V5IjogIjZiODA5ZGI0YjQ3YzhkY2YifQ== GA
+</powershell>
+<runAsLocalSystem>true</runAsLocalSystem>
 
 # Usage within GCP Compute Engine
 When manually creating a new Compute Engine instance, expand "Management, security, disks, networking, sole tenance" and Copy/Paste the following into the 'Startup script' textarea.
