@@ -37,7 +37,7 @@ sudo ./s1-agent-helper.sh S1_CONSOLE_PREFIX API_KEY SITE_TOKEN VERSION_STATUS
 <powershell>
 Set-ExecutionPolicy Unrestricted
 (new-object Net.WebClient).DownloadFile("https://raw.githubusercontent.com/howie-howerton/s1-agents/master/s1-agent-helper.ps1", "$env:TEMP\s1-agent-helper.ps1") 
-& "$env:TEMP\s1-agent-helper.ps1" usea1-purple eEBKUOtXIEaDyVvezc9MHeru6ElrAmpJaNIC8eg7adzMfQYGYX3YRJ3x7h0fFF7eFxY9hKtQxHZR3FDi eyJ1cmwiOiAiaHR0cHM6Ly91c2VhMS1wdXJwbGUuc2VudGluZWxvbmUubmV0IiwgInNpdGVfa2V5IjogIjZiODA5ZGI0YjQ3YzhkY2YifQ== GA
+& "$env:TEMP\s1-agent-helper.ps1" S1_CONSOLE_PREFIX API_KEY SITE_TOKEN VERSION_STATUS
 </powershell>
 <runAsLocalSystem>true</runAsLocalSystem>
 ```
