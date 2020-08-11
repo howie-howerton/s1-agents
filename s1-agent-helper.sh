@@ -106,7 +106,7 @@ function get_latest_version () {
 
 
 # Detect if the Linux Platform uses RPM or DEB packages
-if (type lsb_release &>/dev/null); then
+if (type lsb_release -a &>/dev/null); then
     FILE_EXTENSION='.deb'
     jq_check $FILE_EXTENSION
     sudo curl -H "Accept: application/json" -H "Authorization: ApiToken $API_KEY" "$S1_MGMT_URL$API_ENDPOINT?countOnly=false&packageTypes=Agent&osTypes=linux&sortBy=createdAt&limit=10&fileExtension=.deb&sortOrder=desc" > response.txt
