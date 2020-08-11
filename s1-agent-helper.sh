@@ -33,21 +33,23 @@ if [ "$#" -ne 4 ]; then
 fi
 
 # Check if curl is installed.
-if ! [[ -x "$(which curl)" ]]; then
-  echo ""
-    echo "################################################################################"
-    echo "# INSTALLING CURL UTILITY IN ORDER TO INTERACT WITH S1 API"
-    echo "################################################################################"
+function curl_check () {
+    if ! [[ -x "$(which curl)" ]]; then
     echo ""
-    if [[ $1 = '.deb' ]]; then
-        sudo apt-get update && sudo apt-get install -y curl
-    elif [[ $1 = '.rpm' ]]; then
-        sudo yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-        sudo yum install -y jq
-    else
-        echo "unsupported file extension!" # Note.. might need to handle dnf in the future
+        echo "################################################################################"
+        echo "# INSTALLING CURL UTILITY IN ORDER TO INTERACT WITH S1 API"
+        echo "################################################################################"
+        echo ""
+        if [[ $1 = '.deb' ]]; then
+            sudo apt-get update && sudo apt-get install -y curl
+        elif [[ $1 = '.rpm' ]]; then
+            sudo yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+            sudo yum install -y jq
+        else
+            echo "unsupported file extension!" # Note.. might need to handle dnf in the future
+        fi
     fi
-fi
+}
 
 # Check if the SITE_TOKEN is in the right format
 if ! [[ ${#SITE_TOKEN} -gt 100 ]]; then
@@ -106,8 +108,9 @@ function get_latest_version () {
 
 
 # Detect if the Linux Platform uses RPM or DEB packages
-if (type lsb_release -a &>/dev/null); then
+if (type lsb_release &>/dev/null); then
     FILE_EXTENSION='.deb'
+    curl_check $FILE_EXTENSION
     jq_check $FILE_EXTENSION
     sudo curl -H "Accept: application/json" -H "Authorization: ApiToken $API_KEY" "$S1_MGMT_URL$API_ENDPOINT?countOnly=false&packageTypes=Agent&osTypes=linux&sortBy=createdAt&limit=10&fileExtension=.deb&sortOrder=desc" > response.txt
     get_latest_version
@@ -117,6 +120,7 @@ if (type lsb_release -a &>/dev/null); then
     sudo /opt/sentinelone/bin/sentinelctl control start
 else
     FILE_EXTENSION='.rpm'
+    curl_check $FILE_EXTENSION
     jq_check $FILE_EXTENSION
     sudo curl -H "Accept: application/json" -H "Authorization: ApiToken $API_KEY" "$S1_MGMT_URL$API_ENDPOINT?countOnly=false&packageTypes=Agent&osTypes=linux&sortBy=createdAt&limit=10&fileExtension=.rpm&sortOrder=desc" > response.txt
     get_latest_version
