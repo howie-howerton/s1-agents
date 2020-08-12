@@ -81,10 +81,9 @@ function jq_check () {
         echo "################################################################################"
         echo ""
         if [[ $1 = '.deb' ]]; then
-            sudo yum update -y
+            sudo apt-get update && sudo apt-get install -y jq
         elif [[ $1 = '.rpm' ]]; then
             sudo yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-            sudo apt-get update && sudo apt-get install -y jq
             sudo yum install -y jq
         else
             echo "unsupported file extension!" # Note.. might need to handle dnf in the future
