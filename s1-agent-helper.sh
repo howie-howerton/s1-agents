@@ -66,9 +66,9 @@ if ! [[ ${#API_KEY} -eq 80 ]]; then
 fi
 
 # Check if the VERSION_STATUS is in the right format
-if [[ ${VERSION_STATUS} != "GA" && "$VERSION_STATUS" != "EA" ]]; then
+if [[ ${VERSION_STATUS} != *"GA"* && "$VERSION_STATUS" != *"EA"* ]]; then
     echo "Invalid format for VERSION_STATUS: $VERSION_STATUS"
-    echo "The value of VERSION_STATUS must be either 'EA' or 'GA'"
+    echo "The value of VERSION_STATUS must contain either 'EA' or 'GA'"
     exit 1
 fi
 
@@ -95,9 +95,9 @@ function jq_check () {
 
 
 function get_latest_version () {
-    for i in {0..9}; do
+    for i in {0..20}; do
         s=$(cat response.txt | jq -r ".data[$i].status")
-        if [[ $s = $VERSION_STATUS ]]; then
+        if [[ $s == *$VERSION_STATUS* ]]; then
             AGENT_FILE_NAME=$(cat response.txt | jq -r ".data[$i].fileName")
             AGENT_DOWNLOAD_LINK=$(cat response.txt | jq -r ".data[$i].link")
             break
@@ -111,7 +111,7 @@ if (type lsb_release &>/dev/null); then
     FILE_EXTENSION='.deb'
     curl_check $FILE_EXTENSION
     jq_check $FILE_EXTENSION
-    sudo curl -H "Accept: application/json" -H "Authorization: ApiToken $API_KEY" "$S1_MGMT_URL$API_ENDPOINT?countOnly=false&packageTypes=Agent&osTypes=linux&sortBy=createdAt&limit=10&fileExtension=.deb&sortOrder=desc" > response.txt
+    sudo curl -H "Accept: application/json" -H "Authorization: ApiToken $API_KEY" "$S1_MGMT_URL$API_ENDPOINT?countOnly=false&packageTypes=Agent&osTypes=linux&sortBy=createdAt&limit=20&fileExtension=.deb&sortOrder=desc" > response.txt
     get_latest_version
     sudo curl -H "Authorization: ApiToken $API_KEY" $AGENT_DOWNLOAD_LINK -o /tmp/$AGENT_FILE_NAME
     sudo dpkg -i /tmp/$AGENT_FILE_NAME
@@ -121,7 +121,7 @@ else
     FILE_EXTENSION='.rpm'
     curl_check $FILE_EXTENSION
     jq_check $FILE_EXTENSION
-    sudo curl -H "Accept: application/json" -H "Authorization: ApiToken $API_KEY" "$S1_MGMT_URL$API_ENDPOINT?countOnly=false&packageTypes=Agent&osTypes=linux&sortBy=createdAt&limit=10&fileExtension=.rpm&sortOrder=desc" > response.txt
+    sudo curl -H "Accept: application/json" -H "Authorization: ApiToken $API_KEY" "$S1_MGMT_URL$API_ENDPOINT?countOnly=false&packageTypes=Agent&osTypes=linux&sortBy=createdAt&limit=20&fileExtension=.rpm&sortOrder=desc" > response.txt
     get_latest_version
     sudo curl -H "Authorization: ApiToken $API_KEY" $AGENT_DOWNLOAD_LINK -o /tmp/$AGENT_FILE_NAME
     sudo rpm -i --nodigest /tmp/$AGENT_FILE_NAME
