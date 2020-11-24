@@ -124,7 +124,7 @@ if (cat /etc/*release |grep 'ID=ubuntu' || cat /etc/*release |grep 'ID=debian');
     FILE_EXTENSION='.deb'
     PACKAGE_MANAGER='apt'
     AGENT_INSTALL_SYNTAX='dpkg -i'
-elif (cat /etc/*release |grep 'ID="rhel"' || cat /etc/*release |grep 'ID="amzn"' || cat /etc/*release |grep 'ID="centos"'); then
+elif (cat /etc/*release |grep 'ID="rhel"' || cat /etc/*release |grep 'ID="amzn"' || cat /etc/*release |grep 'ID="centos"' || cat /etc/*release |grep 'ID="ol"'); then
     FILE_EXTENSION='.rpm'
     PACKAGE_MANAGER='yum'
     AGENT_INSTALL_SYNTAX='rpm -i --nodigest'
@@ -146,7 +146,7 @@ jq_check $PACKAGE_MANAGER
 sudo curl -H "Accept: application/json" -H "Authorization: ApiToken $API_KEY" "$S1_MGMT_URL$API_ENDPOINT?countOnly=false&packageTypes=Agent&osTypes=linux&sortBy=createdAt&limit=20&fileExtension=$FILE_EXTENSION&sortOrder=desc" > response.txt
 get_latest_version
 sudo curl -H "Authorization: ApiToken $API_KEY" $AGENT_DOWNLOAD_LINK -o /tmp/$AGENT_FILE_NAME
-sudo $AGENT_INSTALL_SYNTAX -i /tmp/$AGENT_FILE_NAME
+sudo $AGENT_INSTALL_SYNTAX /tmp/$AGENT_FILE_NAME
 sudo /opt/sentinelone/bin/sentinelctl management token set $SITE_TOKEN
 sudo /opt/sentinelone/bin/sentinelctl control start
 
