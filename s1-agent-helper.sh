@@ -4,7 +4,7 @@
 # 
 # Usage:    sudo ./s1-agent-helper.sh S1_CONSOLE_PREFIX API_KEY SITE_TOKEN VERSION_STATUS
 # 
-# Version:  1.4
+# Version:  1.5
 ################################################################################
 
 # NOTE:  This version will install the latest EA or GA version of the S1 agent
@@ -17,8 +17,11 @@ API_KEY=$2
 SITE_TOKEN=$3
 VERSION_STATUS=$4   # "EA" or "GA"
 CURL_OPTIONS='--silent --tlsv1.2'
+FILE_EXTENSION=''
+PACKAGE_MANAGER=''
+AGENT_INSTALL_SYNTAX=''
 AGENT_FILE_NAME=''
-AGENT_DOWNLOAD_LINK='' 
+AGENT_DOWNLOAD_LINK=''
 
 # Check if running as root
 if [[ $(/usr/bin/id -u) -ne 0 ]]; then
@@ -40,14 +43,20 @@ function curl_check () {
         echo "# INSTALLING CURL UTILITY IN ORDER TO INTERACT WITH S1 API"
         echo "################################################################################"
         echo ""
-        if [[ $1 = '.deb' ]]; then
+        if [[ $1 = 'apt' ]]; then
             sudo apt-get update && sudo apt-get install -y curl
-        elif [[ $1 = '.rpm' ]]; then
+        elif [[ $1 = 'yum' ]]; then
             sudo yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-            sudo yum install -y jq
+            sudo yum install -y curl
+        elif [[ $1 = 'zypper' ]]; then
+            sudo zypper install -y curl
+        elif [[ $1 = 'dnf' ]]; then
+            sudo dnf install -y curl
         else
             echo "unsupported file extension!" # Note.. might need to handle dnf in the future
         fi
+    else
+        echo "curl is already installed... :)"
     fi
 }
 
@@ -80,11 +89,15 @@ function jq_check () {
         echo "# INSTALLING JQ UTILITY IN ORDER TO PARSE JSON RESPONSES FROM API"
         echo "################################################################################"
         echo ""
-        if [[ $1 = '.deb' ]]; then
+        if [[ $1 = 'apt' ]]; then
             sudo apt-get update && sudo apt-get install -y jq
-        elif [[ $1 = '.rpm' ]]; then
+        elif [[ $1 = 'yum' ]]; then
             sudo yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
             sudo yum install -y jq
+        elif [[ $1 = 'zypper' ]]; then
+            sudo zypper install -y jq
+        elif [[ $1 = 'dnf' ]]; then
+            sudo dnf install -y jq
         else
             echo "unsupported file extension!" # Note.. might need to handle dnf in the future
         fi 
@@ -106,28 +119,36 @@ function get_latest_version () {
 }
 
 
-# Detect if the Linux Platform uses RPM or DEB packages
-if (type lsb_release &>/dev/null); then
+# Detect if the Linux Platform uses RPM/DEB packages and the correct Package Manager to use
+if (cat /etc/*release |grep 'ID=ubuntu' || cat /etc/*release |grep 'ID=debian'); then
     FILE_EXTENSION='.deb'
-    curl_check $FILE_EXTENSION
-    jq_check $FILE_EXTENSION
-    sudo curl -H "Accept: application/json" -H "Authorization: ApiToken $API_KEY" "$S1_MGMT_URL$API_ENDPOINT?countOnly=false&packageTypes=Agent&osTypes=linux&sortBy=createdAt&limit=20&fileExtension=.deb&sortOrder=desc" > response.txt
-    get_latest_version
-    sudo curl -H "Authorization: ApiToken $API_KEY" $AGENT_DOWNLOAD_LINK -o /tmp/$AGENT_FILE_NAME
-    sudo dpkg -i /tmp/$AGENT_FILE_NAME
-    sudo /opt/sentinelone/bin/sentinelctl management token set $SITE_TOKEN
-    sudo /opt/sentinelone/bin/sentinelctl control start
-else
+    PACKAGE_MANAGER='apt'
+    AGENT_INSTALL_SYNTAX='dpkg -i'
+elif (cat /etc/*release |grep 'ID="rhel"' || cat /etc/*release |grep 'ID="amzn"' || cat /etc/*release |grep 'ID="centos"'); then
     FILE_EXTENSION='.rpm'
-    curl_check $FILE_EXTENSION
-    jq_check $FILE_EXTENSION
-    sudo curl -H "Accept: application/json" -H "Authorization: ApiToken $API_KEY" "$S1_MGMT_URL$API_ENDPOINT?countOnly=false&packageTypes=Agent&osTypes=linux&sortBy=createdAt&limit=20&fileExtension=.rpm&sortOrder=desc" > response.txt
-    get_latest_version
-    sudo curl -H "Authorization: ApiToken $API_KEY" $AGENT_DOWNLOAD_LINK -o /tmp/$AGENT_FILE_NAME
-    sudo rpm -i --nodigest /tmp/$AGENT_FILE_NAME
-    sudo /opt/sentinelone/bin/sentinelctl management token set $SITE_TOKEN
-    sudo /opt/sentinelone/bin/sentinelctl control start
+    PACKAGE_MANAGER='yum'
+    AGENT_INSTALL_SYNTAX='rpm -i --nodigest'
+elif (cat /etc/*release |grep 'ID="sles"'); then
+    FILE_EXTENSION='.rpm'
+    PACKAGE_MANAGER='zypper'
+    AGENT_INSTALL_SYNTAX='rpm -i --nodigest'
+elif (cat /etc/*release |grep 'ID="fedora"' || cat /etc/*release |grep 'ID=fedora'); then
+    FILE_EXTENSION='.rpm'
+    PACKAGE_MANAGER='dnf'
+    AGENT_INSTALL_SYNTAX='rpm -i --nodigest'
+else
+    echo "Unknown Release ID"
+    cat /etc/*release
 fi
+
+curl_check $PACKAGE_MANAGER
+jq_check $PACKAGE_MANAGER
+sudo curl -H "Accept: application/json" -H "Authorization: ApiToken $API_KEY" "$S1_MGMT_URL$API_ENDPOINT?countOnly=false&packageTypes=Agent&osTypes=linux&sortBy=createdAt&limit=20&fileExtension=$FILE_EXTENSION&sortOrder=desc" > response.txt
+get_latest_version
+sudo curl -H "Authorization: ApiToken $API_KEY" $AGENT_DOWNLOAD_LINK -o /tmp/$AGENT_FILE_NAME
+sudo $AGENT_INSTALL_SYNTAX -i /tmp/$AGENT_FILE_NAME
+sudo /opt/sentinelone/bin/sentinelctl management token set $SITE_TOKEN
+sudo /opt/sentinelone/bin/sentinelctl control start
 
 #clean up files..
 rm -f response.txt
