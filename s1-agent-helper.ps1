@@ -48,7 +48,7 @@ $apiHeaders = @{"Authorization"="APIToken $api_key"}
 # The body contains parameters to search for packages with .exe file extensions.. ordering by latest version.
 $body = @{
     "limit"=10
-    "packageTypes"="Agent"
+    "packageTypes"="AgentAndRanger"
     "osTypes"="windows"
     "countOnly"="false"
     "sortBy"="createdAt"
@@ -60,9 +60,13 @@ $response = Invoke-RestMethod -Uri $uri -Headers $apiHeaders -Method Get -Conten
 # Store the response data as a list of objects
 $packages = $response.data
 
+# Check if we need a 32 or 64bit package
+$osArch = "64 bit"
+if($env:PROCESSOR_ARCHITECTURE -eq "x86"){$osArch = "32 bit"}
+
 #Note: "$version_status*"" will match either GA or GA-SP1, GA-SP2, etc
 foreach ($package in $packages) {
-    if ($package.status -like "$version_status*") {
+    if ($package.status -like "$version_status*" -and $package.osArch -eq $osArch) {
         $agent_download_link = $package.link
         $agent_file_name = $package.fileName
         break
