@@ -7,7 +7,9 @@ param(
     [Parameter(Position=2,mandatory=$true)]
     [string]$site_token,
     [Parameter(Position=3,mandatory=$true)]
-    [string]$version_status
+    [string]$version_status,
+    [Parameter(Position=4,mandatory=$false)]
+    [string]$auto_reboot
     )
 
 write-output "Console:          $s1_console_prefix"
@@ -80,6 +82,12 @@ Write-Output "Agent Download Link: $agent_download_link"
 $wc = New-Object System.Net.WebClient
 $wc.Headers['Authorization'] = "APIToken $api_key"
 $wc.DownloadFile($agent_download_link, "$env:TEMP\$agent_file_name")
-# Execute the package with the quiet option
-& "$env:TEMP\$agent_file_name" /SITE_TOKEN=$site_token /quiet /reboot
+if($auto_reboot -eq "True") {
+    # Execute the package with the quiet option
+    & "$env:TEMP\$agent_file_name" /SITE_TOKEN=$site_token /quiet /reboot
+}
+else {
+    # Execute the package with the quiet option
+    & "$env:TEMP\$agent_file_name" /SITE_TOKEN=$site_token /quiet /NORESTART
+}
 
