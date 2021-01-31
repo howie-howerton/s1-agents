@@ -133,6 +133,7 @@ function get_latest_version () {
             fi
         fi
     done
+    echo "The latest version is: $VERSION"
     if [[ $AGENT_FILE_NAME = '' ]]; then
         printf "\n${Red}ERROR:  Could not obtain AGENT_FILE_NAME in get_latest_version function. ${Color_Off}\n"
         echo ""
