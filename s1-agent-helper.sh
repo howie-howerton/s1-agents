@@ -122,12 +122,15 @@ function check_api_response () {
 
 
 function get_latest_version () {
+    VERSION=''
     for i in {0..20}; do
         s=$(cat response.txt | jq -r ".data[$i].status")
         if [[ $s == *$VERSION_STATUS* ]]; then
-            AGENT_FILE_NAME=$(cat response.txt | jq -r ".data[$i].fileName")
-            AGENT_DOWNLOAD_LINK=$(cat response.txt | jq -r ".data[$i].link")
-            break
+            if [[ $(cat response.txt | jq -r ".data[$i].version") > $VERSION ]];then
+                VERSION=$(cat response.txt | jq -r ".data[$i].version")
+                AGENT_FILE_NAME=$(cat response.txt | jq -r ".data[$i].fileName")
+                AGENT_DOWNLOAD_LINK=$(cat response.txt | jq -r ".data[$i].link")
+            fi
         fi
     done
     if [[ $AGENT_FILE_NAME = '' ]]; then
