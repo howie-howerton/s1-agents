@@ -82,9 +82,10 @@ if ! [[ ${#API_KEY} -eq 80 ]]; then
 fi
 
 # Check if the VERSION_STATUS is in the right format
-if [[ ${VERSION_STATUS} != *"GA"* && "$VERSION_STATUS" != *"EA"* ]]; then
+VERSION_STATUS=$(echo $VERSION_STATUS | tr [A-Z] [a-z])
+if [[ ${VERSION_STATUS} != *"ga"* && "$VERSION_STATUS" != *"ea"* ]]; then
     printf "\n${Red}ERROR:  Invalid format for VERSION_STATUS: $VERSION_STATUS ${Color_Off}\n"
-    echo "The value of VERSION_STATUS must contain either 'EA' or 'GA'"
+    echo "The value of VERSION_STATUS must contain either 'ea' or 'ga'"
     echo ""
     exit 1
 fi
@@ -111,6 +112,15 @@ function jq_check () {
 }
 
 
+function check_api_response () {
+    if [[ $(cat response.txt | jq 'has("errors")') == 'true' ]]; then
+        printf "\n${Red}ERROR:  Could not authenticate using the existing mgmt server and api key. ${Color_Off}\n"
+        echo ""
+        exit 1
+    fi
+}
+
+
 function get_latest_version () {
     for i in {0..20}; do
         s=$(cat response.txt | jq -r ".data[$i].status")
@@ -120,6 +130,11 @@ function get_latest_version () {
             break
         fi
     done
+    if [[ $AGENT_FILE_NAME = '' ]]; then
+        printf "\n${Red}ERROR:  Could not obtain AGENT_FILE_NAME in get_latest_version function. ${Color_Off}\n"
+        echo ""
+        exit 1
+    fi
 }
 
 
@@ -149,6 +164,7 @@ fi
 curl_check $PACKAGE_MANAGER
 jq_check $PACKAGE_MANAGER
 sudo curl -H "Accept: application/json" -H "Authorization: ApiToken $API_KEY" "$S1_MGMT_URL$API_ENDPOINT?countOnly=false&packageTypes=Agent&osTypes=linux&sortBy=createdAt&limit=20&fileExtension=$FILE_EXTENSION&sortOrder=desc" > response.txt
+check_api_response
 get_latest_version
 printf "\n${Yellow}INFO:  Downloading $AGENT_FILE_NAME ${Color_Off}\n"
 sudo curl -H "Authorization: ApiToken $API_KEY" $AGENT_DOWNLOAD_LINK -o /tmp/$AGENT_FILE_NAME
