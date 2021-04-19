@@ -22,6 +22,7 @@ PACKAGE_MANAGER=''
 AGENT_INSTALL_SYNTAX=''
 AGENT_FILE_NAME=''
 AGENT_DOWNLOAD_LINK=''
+VERSION_COMPARE_RESULT=''
 
 Color_Off='\033[0m'       # Text Resets
 # Regular Colors
@@ -126,14 +127,25 @@ function get_latest_version () {
     for i in {0..20}; do
         s=$(cat response.txt | jq -r ".data[$i].status")
         if [[ $s == *$VERSION_STATUS* ]]; then
-            if [[ $(cat response.txt | jq -r ".data[$i].version") > $VERSION ]];then
-                VERSION=$(cat response.txt | jq -r ".data[$i].version")
+            echo $(cat response.txt | jq -r ".data[$i].version") >> versions.txt
+        fi
+    done
+    VERSION=$(cat versions.txt | sort -t "." -k 1,1 -k 2,2 -k 3,3 -k 4,4 -g | tail -n 1)
+    echo "The latest version is: $VERSION"
+}
+
+function get_latest_version_info () {
+    for i in {0..20}; do
+        s=$(cat response.txt | jq -r ".data[$i].status")
+        if [[ $s == *$VERSION_STATUS* ]]; then
+            if [[ $(cat response.txt | jq -r ".data[$i].version") == $VERSION ]];then
+                #VERSION=$(cat response.txt | jq -r ".data[$i].version")
                 AGENT_FILE_NAME=$(cat response.txt | jq -r ".data[$i].fileName")
                 AGENT_DOWNLOAD_LINK=$(cat response.txt | jq -r ".data[$i].link")
             fi
         fi
     done
-    echo "The latest version is: $VERSION"
+
     if [[ $AGENT_FILE_NAME = '' ]]; then
         printf "\n${Red}ERROR:  Could not obtain AGENT_FILE_NAME in get_latest_version function. ${Color_Off}\n"
         echo ""
@@ -170,6 +182,7 @@ jq_check $PACKAGE_MANAGER
 sudo curl -H "Accept: application/json" -H "Authorization: ApiToken $API_KEY" "$S1_MGMT_URL$API_ENDPOINT?countOnly=false&packageTypes=Agent&osTypes=linux&sortBy=createdAt&limit=20&fileExtension=$FILE_EXTENSION&sortOrder=desc" > response.txt
 check_api_response
 get_latest_version
+get_latest_version_info
 printf "\n${Yellow}INFO:  Downloading $AGENT_FILE_NAME ${Color_Off}\n"
 sudo curl -H "Authorization: ApiToken $API_KEY" $AGENT_DOWNLOAD_LINK -o /tmp/$AGENT_FILE_NAME
 printf "\n${Yellow}INFO:  Installing S1 Agent: $(echo "sudo $AGENT_INSTALL_SYNTAX /tmp/$AGENT_FILE_NAME") ${Color_Off}\n"
@@ -182,6 +195,7 @@ sudo /opt/sentinelone/bin/sentinelctl control start
 #clean up files..
 printf "\n${Yellow}INFO:  Cleaning up files... ${Color_Off}\n"
 rm -f response.txt
+rm -f versions.txt
 rm -f /tmp/$AGENT_FILE_NAME
 
 printf "\n${Green}SUCCESS:  Finished installing SentinelOne Agent. ${Color_Off}\n\n"
