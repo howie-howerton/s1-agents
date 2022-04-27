@@ -67,9 +67,9 @@ function curl_check () {
 }
 
 # Check if the SITE_TOKEN is in the right format
-if ! [[ ${#SITE_TOKEN} -gt 100 ]]; then
+if ! [[ ${#SITE_TOKEN} -gt 90 ]]; then
     printf "\n${Red}ERROR:  Invalid format for SITE_TOKEN: $SITE_TOKEN ${Color_Off}\n"
-    echo "Site Tokens are generally more than 100 characters long and are ASCII encoded."
+    echo "Site Tokens are generally more than 90 characters long and are ASCII encoded."
     echo ""
     exit 1
 fi
