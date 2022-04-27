@@ -29,8 +29,8 @@ if (-Not ($api_key.Length -eq 80)) {
     exit 1
 }
 
-if (-Not ($site_token.Length -gt 100)) {
-    Write-Output "Site Tokens are generally 100 characters or longer and are ASCII encoded."
+if (-Not ($site_token.Length -gt 90)) {
+    Write-Output "Site Tokens are generally 90 characters or longer and are ASCII encoded."
     exit 1
 }
 
