@@ -159,7 +159,7 @@ if (cat /etc/*release |grep 'ID=ubuntu' || cat /etc/*release |grep 'ID=debian');
     FILE_EXTENSION='.deb'
     PACKAGE_MANAGER='apt'
     AGENT_INSTALL_SYNTAX='dpkg -i'
-elif (cat /etc/*release |grep 'ID="rhel"' || cat /etc/*release |grep 'ID="amzn"' || cat /etc/*release |grep 'ID="centos"' || cat /etc/*release |grep 'ID="ol"' || cat /etc/*release |grep 'ID="scientific"'); then
+elif (cat /etc/*release |grep 'ID="rhel"' || cat /etc/*release |grep 'ID="amzn"' || cat /etc/*release |grep 'ID="centos"' || cat /etc/*release |grep 'ID="ol"' || cat /etc/*release |grep 'ID="scientific"' || cat /etc/*release |grep 'ID="rocky"' || cat /etc/*release |grep 'ID="almalinux"'); then
     FILE_EXTENSION='.rpm'
     PACKAGE_MANAGER='yum'
     AGENT_INSTALL_SYNTAX='rpm -i --nodigest'
